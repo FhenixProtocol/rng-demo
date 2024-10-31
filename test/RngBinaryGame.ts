@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { expect } from "chai";
-import hre, { ethers, fhenixjs } from "hardhat";
+import hre, { ethers } from "hardhat";
 import { RngBinaryGame } from "../typechain-types";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { getTokensFromFaucet } from "../utils/instance";
@@ -9,7 +9,6 @@ describe("RngBinaryGame", function () {
   let signer: SignerWithAddress;
 
   let rngBinaryGame: RngBinaryGame;
-  let rngBinaryGameAddress: string;
 
   before(async () => {
     signer = (await ethers.getSigners())[0];
@@ -20,7 +19,6 @@ describe("RngBinaryGame", function () {
     );
     rngBinaryGame = await rngBinaryGameFactory.deploy();
     await rngBinaryGame.waitForDeployment();
-    rngBinaryGameAddress = await rngBinaryGame.getAddress();
   });
 
   describe("Behavior", function () {
