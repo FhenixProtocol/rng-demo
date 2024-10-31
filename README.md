@@ -1,7 +1,34 @@
-# Fhenix Hardhat Example [![Open in Gitpod][gitpod-badge]][gitpod]
+# RNG Binary Guessing Game
 
-[gitpod]: https://gitpod.io/#https://github.com/fhenixprotocol/fhenix-hardhat-example
-[gitpod-badge]: https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-FFB45B?logo=gitpod
+This repo is an example of the RNG functions released as part of the Fhenix Nitrogen testnet. Take a look at the [randomness docs (TODO:FIXLINK)](https://) for more information.
+
+The example contract is a guessing game:
+
+- Starting the game uses the function `FHE.randomEuint8` to generate a random uint8 between 0 and 255 inclusive.
+- Players can then make a series of guesses to find the random number.
+- The contract tells the player whether the random number is `gt` or `lt` their guess.
+
+Important note: When a player makes their guess, `lt` and `gt` are determined _without_ decrypting the random number to prevent it from being leaked.
+
+### Relevant Files
+
+- `contracts/RngBinaryGame.sol` [link](./contracts/RngBinaryGame.sol)
+- `test/RngBinaryGame.ts` [link](./test/RngBinaryGame.ts)
+- `tasks/play.ts` [link](./tasks/play.ts)
+
+### Playing the Game
+
+You can play the guessing game with the command `pnpm play` which runs the `play` task found here.
+
+### Setup
+
+This example was built using the `fhenix-hardhat-example` repo found [here](https://github.com/FhenixProtocol/fhenix-hardhat-example). See the readme below for setting up and interacting with this repo.
+
+---
+
+`fhenix-hardhat-example:README.md`
+
+# Fhenix Hardhat Example [![Open in Gitpod][gitpod-badge]][gitpod]
 
 This repository contains a sample project that you can use as the starting point
 for your Fhenix project. It's also a great fit for learning the basics of
@@ -67,7 +94,7 @@ This template contains experimental support for testing using Hardhat Network. B
 
 Note that in order to use the hardhat network in tasks with `--network hardhat` the tasks need to deploy the contract themselves, as the network is ephemeral. Alternatively you can use the stand-alone hardhat network by setting it as the default network in `hardhat.config.ts`.
 
-If you have any issues or feature requests regarding this support please open a ticket in this repository 
+If you have any issues or feature requests regarding this support please open a ticket in this repository
 
 ## Troubleshooting
 
@@ -78,3 +105,6 @@ For example, if the docker service is installed but not running, it might indica
 ## More Info
 
 To learn more about the Fhenix Hardhat plugin, check out the [Fhenix Hardhat Plugin Repository](https://github.com/FhenixProtocol/fhenix-hardhat-plugin).
+
+[gitpod]: https://gitpod.io/#https://github.com/fhenixprotocol/fhenix-hardhat-example
+[gitpod-badge]: https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-FFB45B?logo=gitpod

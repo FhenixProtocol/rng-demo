@@ -14,7 +14,7 @@
     "fhenix:faucet": "hardhat task:fhenix:usefaucet",
     "fhenix:checkExposedEncryptedVars": "hardhat task:fhenix:checkExposedEncryptedVars",
     "task:deploy": "hardhat deploy",
-    "task:play": "hardhat task:play",
+    "play": "hardhat task:play",
     "-------------------": "",
     " --- localfhenix ---": "",
     "  -------------------": "",
