@@ -1,6 +1,98 @@
 import { task } from "hardhat/config";
 import { Deployment } from "hardhat-deploy/dist/types";
 import inquirer from "inquirer";
+import { assertArgument, resolveAddress, TransactionRequest } from "ethers";
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { getRpcTransaction } from "@nomicfoundation/hardhat-ethers/internal/ethers-utils";
+
+const Primitive = "bigint,boolean,function,number,string,symbol".split(/,/g);
+function deepCopy<T = any>(value: T): T {
+  if (
+    value === null ||
+    value === undefined ||
+    Primitive.indexOf(typeof value) >= 0
+  ) {
+    return value;
+  }
+
+  // Keep any Addressable
+  if (typeof (value as any).getAddress === "function") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return (value as any).map(deepCopy);
+  }
+
+  if (typeof value === "object") {
+    return Object.keys(value).reduce((accum, key) => {
+      accum[key] = (value as any)[key];
+      return accum;
+    }, {} as any);
+  }
+
+  throw new Error(`Assertion error: ${value as any} (${typeof value})`);
+}
+
+const sendUncheckedTransaction = async (
+  signer: HardhatEthersSigner,
+  tx: TransactionRequest,
+): Promise<string> => {
+  const resolvedTx = deepCopy(tx);
+
+  const promises: Array<Promise<void>> = [];
+
+  // Make sure the from matches the sender
+  if (resolvedTx.from !== null && resolvedTx.from !== undefined) {
+    const _from = resolvedTx.from;
+    promises.push(
+      (async () => {
+        const from = await resolveAddress(_from, signer.provider);
+        assertArgument(
+          from !== null &&
+            from !== undefined &&
+            from.toLowerCase() === signer.address.toLowerCase(),
+          "from address mismatch",
+          "transaction",
+          tx,
+        );
+        resolvedTx.from = from;
+      })(),
+    );
+  } else {
+    resolvedTx.from = signer.address;
+  }
+
+  if (resolvedTx.gasLimit === null || resolvedTx.gasLimit === undefined) {
+    promises.push(
+      (async () => {
+        resolvedTx.gasLimit = await signer.provider.estimateGas({
+          ...resolvedTx,
+          from: signer.address,
+        });
+      })(),
+    );
+  }
+
+  // The address may be an ENS name or Addressable
+  if (resolvedTx.to !== null && resolvedTx.to !== undefined) {
+    const _to = resolvedTx.to;
+    promises.push(
+      (async () => {
+        resolvedTx.to = await resolveAddress(_to, signer.provider);
+      })(),
+    );
+  }
+
+  // Wait until all of our properties are filled in
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+
+  const hexTx = getRpcTransaction(resolvedTx);
+
+  return signer.provider.send("eth_sendTransaction", [hexTx]);
+};
 
 task("task:play").setAction(async function (_, hre) {
   const { fhenixjs, ethers, deployments } = hre;
@@ -62,9 +154,19 @@ task("task:play").setAction(async function (_, hre) {
     console.log(" ");
 
     try {
-      const tx = await rngBinaryGame.guess(guess);
-      // await tx.wait();
-    } catch {}
+      const populated = await rngBinaryGame.guess.populateTransaction(guess);
+      console.log({ populated });
+      const hash = await sendUncheckedTransaction(signer, populated);
+      console.log({ hash });
+
+      const tx = await signer.sendTransaction(populated);
+      signer.sendTransaction(populated);
+      signer.signTransaction;
+      console.log({ tx });
+      await tx.wait();
+    } catch (e) {
+      console.log("error", e);
+    }
 
     const guesses = await rngBinaryGame.connect(signer).getGameState();
 
