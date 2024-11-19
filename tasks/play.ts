@@ -61,8 +61,10 @@ task("task:play").setAction(async function (_, hre) {
     });
     console.log(" ");
 
-    const tx = await rngBinaryGame.guess(guess);
-    await tx.wait();
+    try {
+      const tx = await rngBinaryGame.guess(guess);
+      // await tx.wait();
+    } catch {}
 
     const guesses = await rngBinaryGame.connect(signer).getGameState();
 

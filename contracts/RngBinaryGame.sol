@@ -4,6 +4,7 @@ pragma solidity >=0.8.13 <0.9.0;
 
 import "@fhenixprotocol/contracts/FHE.sol";
 import {Permissioned, Permission} from "@fhenixprotocol/contracts/access/Permissioned.sol";
+import {Console} from "@fhenixprotocol/contracts/utils/debug/Console.sol";
 
 contract RngBinaryGame is Permissioned {
   struct GameGuess {
@@ -17,6 +18,8 @@ contract RngBinaryGame is Permissioned {
     euint8 number;
     uint8 guesses;
   }
+
+  uint8 public flag = 0;
 
   mapping(address => GameState) private gameState;
   mapping(address => mapping(uint8 => GameGuess)) private gameGuesses;
@@ -48,8 +51,13 @@ contract RngBinaryGame is Permissioned {
     ) revert GameFinished();
 
     euint8 eGuess = FHE.asEuint8(uint256(_guess));
+    Console.log("trivial encrypt finished");
+
     bool lt = FHE.decrypt(FHE.lt(eGuess, game.number));
+    Console.log("lt finished");
+
     bool gt = FHE.decrypt(FHE.gt(eGuess, game.number));
+    Console.log("gt finished");
 
     gameGuesses[msg.sender][game.guesses] = GameGuess({
       guess: _guess,
@@ -57,6 +65,10 @@ contract RngBinaryGame is Permissioned {
       gt: gt
     });
     game.guesses += 1;
+
+    Console.log("finished");
+
+    flag += 1;
   }
 
   function getGameState() public view returns (GameGuess[] memory guesses) {
