@@ -1,3 +1,4 @@
+import { checkExposedEncryptedVars } from "fhenix-hardhat-plugin";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -35,6 +36,8 @@ const deployRngBinaryGame: DeployFunction = async function (
       console.log("Received tokens from the local faucet. Ready to deploy...");
     }
   }
+
+  await checkExposedEncryptedVars(hre);
 
   await deploy("RngBinaryGame", {
     from: deployer,

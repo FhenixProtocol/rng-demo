@@ -48,11 +48,13 @@ contract RngBinaryGame is Permissioned {
     ) revert GameFinished();
 
     euint8 eGuess = FHE.asEuint8(uint256(_guess));
+    bool lt = FHE.decrypt(FHE.lt(eGuess, game.number));
+    bool gt = FHE.decrypt(FHE.gt(eGuess, game.number));
 
     gameGuesses[msg.sender][game.guesses] = GameGuess({
-      guess: FHE.decrypt(eGuess),
-      lt: FHE.decrypt(FHE.lt(eGuess, game.number)),
-      gt: FHE.decrypt(FHE.gt(eGuess, game.number))
+      guess: _guess,
+      lt: lt,
+      gt: gt
     });
     game.guesses += 1;
   }
