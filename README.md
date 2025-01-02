@@ -1,6 +1,6 @@
 # RNG Binary Guessing Game
 
-This repo is an example of the RNG functions released as part of the Fhenix Nitrogen testnet. Take a look at the [randomness docs (TODO:FIXLINK)](https://) for more information.
+This repo is an example of the RNG functions released as part of the Fhenix Nitrogen testnet. Take a look at the [randomness docs](https://docs.fhenix.zone/docs/devdocs/Writing%20Smart%20Contracts/Randomness) for more information.
 
 The example contract is a guessing game:
 
